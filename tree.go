@@ -60,7 +60,7 @@ func itemNames(nodes []Item) (names []string) {
 // Nodes returns all available nodes, in a random order.
 func (t *Tree) Nodes() (tn Nodes) {
 	for name := range t.nodes {
-		n, _ := t.getNode(name)
+		n, _ := t.GetNode(name)
 		tn = append(tn, n)
 	}
 	return
@@ -71,7 +71,7 @@ func (t *Tree) GetNodes(names ...string) (tn Nodes, ok bool) {
 	ok = true
 	tn = make(Nodes, len(names))
 	for i, n := range names {
-		tn[i], ok = t.getNode(n)
+		tn[i], ok = t.GetNode(n)
 		if !ok {
 			return
 		}
@@ -79,7 +79,8 @@ func (t *Tree) GetNodes(names ...string) (tn Nodes, ok bool) {
 	return
 }
 
-func (t *Tree) getNode(name string) (tn *Node, ok bool) {
+// GetNode returns a node by its name.
+func (t *Tree) GetNode(name string) (tn *Node, ok bool) {
 	n, ok := t.nodes[name]
 	if !ok {
 		return
