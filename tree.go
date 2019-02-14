@@ -45,8 +45,8 @@ func (t *Tree) AddParents(from Item, to ...Item) {
 }
 
 // Nodes returns all available nodes, in a random order.
-func (t *Tree) Nodes() (tn Nodes) {
-	tn = make(Nodes, len(t.nodes))
+func (t *Tree) Nodes() (tn []*Node) {
+	tn = make([]*Node, len(t.nodes))
 	var i int
 	for name := range t.nodes {
 		n, _ := t.GetNode(name)
@@ -57,9 +57,9 @@ func (t *Tree) Nodes() (tn Nodes) {
 }
 
 // GetNodes gets nodes by their names. It will return false if the node cannot be found.
-func (t *Tree) GetNodes(names ...string) (tn Nodes, ok bool) {
+func (t *Tree) GetNodes(names ...string) (tn []*Node, ok bool) {
 	ok = true
-	tn = make(Nodes, len(names))
+	tn = make([]*Node, len(names))
 	for i, n := range names {
 		tn[i], ok = t.GetNode(n)
 		if !ok {
@@ -89,10 +89,10 @@ func (t *Tree) GetNode(name string) (tn *Node, ok bool) {
 // Sorted returns the nodes in sorted order, where the nodes with no parents come first, then
 // worked through the levels of the tree.
 func (t *Tree) Sorted() (items []Item) {
-	n := t.Nodes()
-	sort.Sort(n)
-	items = make([]Item, len(n))
-	for i, nn := range n {
+	ns := NewNodeSorter(t.Nodes())
+	sort.Sort(ns)
+	items = make([]Item, len(ns.Nodes))
+	for i, nn := range ns.Nodes {
 		items[i] = nn.Item
 	}
 	return

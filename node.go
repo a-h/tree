@@ -28,7 +28,7 @@ func (tn *Node) AscendantLevels(current int) int {
 }
 
 // Ascendants is a list of all nodes above the current node in the hierarchy.
-func (tn *Node) Ascendants() (ascendants Nodes) {
+func (tn *Node) Ascendants() (ascendants []*Node) {
 	for _, p := range tn.Parents {
 		ascendants = append(ascendants, p)
 		ascendants = append(ascendants, p.Ascendants()...)
@@ -36,20 +36,35 @@ func (tn *Node) Ascendants() (ascendants Nodes) {
 	return
 }
 
-// Nodes is a slice of Nodes which can be sorted by the level in the hierarchy
-// and alphabetically when nodes are at the same level.
-type Nodes []*Node
+// NewNodeSorter creates a new node sorter which can organise the nodes parents first.
+func NewNodeSorter(nodes []*Node) (ns *NodeSorter) {
+	ns = &NodeSorter{
+		Nodes:     nodes,
+		nodeDepth: make(map[*Node]int, len(nodes)),
+	}
+	for _, n := range nodes {
+		ns.nodeDepth[n] = n.AscendantLevels(0)
+	}
+	return ns
+}
 
-func (tn Nodes) Len() int      { return len(tn) }
-func (tn Nodes) Swap(i, j int) { tn[i], tn[j] = tn[j], tn[i] }
-func (tn Nodes) Less(i, j int) bool {
-	//TODO: Memoize the levels to avoid expensive calculations?
-	il, jl := tn[i].AscendantLevels(0), tn[j].AscendantLevels(0)
+// NodeSorter sorts a slice of Nodes which can be sorted by the level in the hierarchy
+// and alphabetically when nodes are at the same level.
+type NodeSorter struct {
+	Nodes     []*Node
+	nodeDepth map[*Node]int
+}
+
+func (ns NodeSorter) Len() int      { return len(ns.Nodes) }
+func (ns NodeSorter) Swap(i, j int) { ns.Nodes[i], ns.Nodes[j] = ns.Nodes[j], ns.Nodes[i] }
+func (ns NodeSorter) Less(i, j int) bool {
+	ni, nj := ns.Nodes[i], ns.Nodes[j]
+	il, jl := ns.nodeDepth[ni], ns.nodeDepth[nj]
 	if il < jl {
 		return true
 	}
 	if il == jl {
-		return strings.Compare(tn[i].Item.Name(), tn[j].Item.Name()) < 0
+		return strings.Compare(ni.Item.Name(), nj.Item.Name()) < 0
 	}
 	return false
 }
