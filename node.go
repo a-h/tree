@@ -53,6 +53,7 @@ type Nodes []*Node
 func (tn Nodes) Len() int      { return len(tn) }
 func (tn Nodes) Swap(i, j int) { tn[i], tn[j] = tn[j], tn[i] }
 func (tn Nodes) Less(i, j int) bool {
+	//TODO: Memoize the levels to avoid expensive calculations?
 	il, jl := tn[i].AscendantLevels(0), tn[j].AscendantLevels(0)
 	if il < jl {
 		return true
