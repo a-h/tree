@@ -22,8 +22,8 @@ type Tree struct {
 	m        sync.Mutex
 }
 
-// AddNodes adds nodes to the tree.
-func (t *Tree) AddNodes(nodes ...Item) {
+// AddItems adds items to the tree.
+func (t *Tree) AddItems(nodes ...Item) {
 	t.m.Lock()
 	defer t.m.Unlock()
 	for _, n := range nodes {
@@ -38,18 +38,18 @@ func (t *Tree) AddNodes(nodes ...Item) {
 
 // AddParents adds both items (if required) then adds a relationship from the child to the parent.
 func (t *Tree) AddParents(from Item, to ...Item) {
-	t.AddNodes(from)
-	t.AddNodes(to...)
+	t.AddItems(from)
+	t.AddItems(to...)
 	t.m.Lock()
 	defer t.m.Unlock()
 	for _, tt := range to {
 		edges := t.children[from.Name()]
 		t.children[from.Name()] = append(edges, tt.Name())
 	}
-	t.parents[from.Name()] = append(t.parents[from.Name()], nodeNames(to)...)
+	t.parents[from.Name()] = append(t.parents[from.Name()], itemNames(to)...)
 }
 
-func nodeNames(nodes []Item) (names []string) {
+func itemNames(nodes []Item) (names []string) {
 	names = make([]string, len(nodes))
 	for i, n := range nodes {
 		names[i] = n.Name()
@@ -58,7 +58,7 @@ func nodeNames(nodes []Item) (names []string) {
 }
 
 // Nodes returns all available nodes, in a random order.
-func (t *Tree) Nodes() (tn TreeNodes) {
+func (t *Tree) Nodes() (tn Nodes) {
 	for name := range t.nodes {
 		n, _ := t.getNode(name)
 		tn = append(tn, n)
@@ -67,9 +67,9 @@ func (t *Tree) Nodes() (tn TreeNodes) {
 }
 
 // GetNodes gets nodes by their names. It will return false if the node cannot be found.
-func (t *Tree) GetNodes(names ...string) (tn TreeNodes, ok bool) {
+func (t *Tree) GetNodes(names ...string) (tn Nodes, ok bool) {
 	ok = true
-	tn = make(TreeNodes, len(names))
+	tn = make(Nodes, len(names))
 	for i, n := range names {
 		tn[i], ok = t.getNode(n)
 		if !ok {
@@ -79,7 +79,7 @@ func (t *Tree) GetNodes(names ...string) (tn TreeNodes, ok bool) {
 	return
 }
 
-func (t *Tree) getNode(name string) (tn *TreeNode, ok bool) {
+func (t *Tree) getNode(name string) (tn *Node, ok bool) {
 	n, ok := t.nodes[name]
 	if !ok {
 		return
@@ -92,8 +92,8 @@ func (t *Tree) getNode(name string) (tn *TreeNode, ok bool) {
 	if !ok {
 		return
 	}
-	tn = &TreeNode{
-		Node:     n,
+	tn = &Node{
+		Item:     n,
 		Children: children,
 		Parents:  parents,
 	}
@@ -102,12 +102,12 @@ func (t *Tree) getNode(name string) (tn *TreeNode, ok bool) {
 
 // Sorted returns the nodes in sorted order, where the nodes with no parents come first, then
 // worked through the levels of the tree.
-func (t *Tree) Sorted() (nodes []Item) {
+func (t *Tree) Sorted() (items []Item) {
 	n := t.Nodes()
 	sort.Sort(n)
-	nodes = make([]Item, len(n))
+	items = make([]Item, len(n))
 	for i, nn := range n {
-		nodes[i] = nn.Node
+		items[i] = nn.Item
 	}
 	return
 }

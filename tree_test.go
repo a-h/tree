@@ -49,20 +49,20 @@ func getNames(nodes []Item) (s []string) {
 
 func singleParentSingleChild() *Tree {
 	t := New()
-	t.AddParents(StringNode("child"), StringNode("parent"))
+	t.AddParents(StringItem("child"), StringItem("parent"))
 	return t
 }
 
 func singleParentTwoChildren() *Tree {
 	t := New()
-	t.AddParents(StringNode("child1"), StringNode("parent"))
-	t.AddParents(StringNode("child2"), StringNode("parent"))
+	t.AddParents(StringItem("child1"), StringItem("parent"))
+	t.AddParents(StringItem("child2"), StringItem("parent"))
 	return t
 }
 
 func singleChildTwoParents() *Tree {
 	t := New()
-	t.AddParents(StringNode("child1"), StringNode("parentA"))
-	t.AddParents(StringNode("child1"), StringNode("parentB"))
+	t.AddParents(StringItem("child1"), StringItem("parentA"))
+	t.AddParents(StringItem("child1"), StringItem("parentB"))
 	return t
 }
