@@ -88,3 +88,11 @@ func multipleLevels() *Tree {
 	t.AddParents(StringItem("D"), StringItem("B"))
 	return t
 }
+
+func BenchmarkMultipleLevels(b *testing.B) {
+	b.ReportAllocs()
+	for n := 0; n < b.N; n++ {
+		tree := multipleLevels()
+		tree.Sorted()
+	}
+}

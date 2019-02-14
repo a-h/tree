@@ -8,18 +8,16 @@ import (
 // New creates a new tree.
 func New() *Tree {
 	return &Tree{
-		nodes:    make(map[string]Item),
-		parents:  make(map[string][]string),
-		children: make(map[string][]string),
+		nodes:   make(map[string]Item),
+		parents: make(map[string][]string),
 	}
 }
 
 // Tree of nodes.
 type Tree struct {
-	nodes    map[string]Item
-	parents  map[string][]string
-	children map[string][]string
-	m        sync.Mutex
+	nodes   map[string]Item
+	parents map[string][]string
+	m       sync.Mutex
 }
 
 // AddItems adds items to the tree.
@@ -32,7 +30,6 @@ func (t *Tree) AddItems(nodes ...Item) {
 		}
 		t.nodes[n.Name()] = n
 		t.parents[n.Name()] = []string{}
-		t.children[n.Name()] = []string{}
 	}
 }
 
@@ -43,18 +40,8 @@ func (t *Tree) AddParents(from Item, to ...Item) {
 	t.m.Lock()
 	defer t.m.Unlock()
 	for _, tt := range to {
-		edges := t.children[from.Name()]
-		t.children[from.Name()] = append(edges, tt.Name())
+		t.parents[from.Name()] = append(t.parents[from.Name()], tt.Name())
 	}
-	t.parents[from.Name()] = append(t.parents[from.Name()], itemNames(to)...)
-}
-
-func itemNames(nodes []Item) (names []string) {
-	names = make([]string, len(nodes))
-	for i, n := range nodes {
-		names[i] = n.Name()
-	}
-	return
 }
 
 // Nodes returns all available nodes, in a random order.
@@ -89,14 +76,9 @@ func (t *Tree) GetNode(name string) (tn *Node, ok bool) {
 	if !ok {
 		return
 	}
-	children, ok := t.GetNodes(t.children[name]...)
-	if !ok {
-		return
-	}
 	tn = &Node{
-		Item:     n,
-		Children: children,
-		Parents:  parents,
+		Item:    n,
+		Parents: parents,
 	}
 	return
 }

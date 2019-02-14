@@ -4,9 +4,8 @@ import "strings"
 
 // Node is a node within the tree, which includes its parents and children.
 type Node struct {
-	Item     Item
-	Parents  []*Node
-	Children []*Node
+	Item    Item
+	Parents []*Node
 }
 
 // AscendantLevels returns how many levels there are above the current Node.
@@ -33,15 +32,6 @@ func (tn *Node) Ascendants() (ascendants Nodes) {
 	for _, p := range tn.Parents {
 		ascendants = append(ascendants, p)
 		ascendants = append(ascendants, p.Ascendants()...)
-	}
-	return
-}
-
-// Descendants is a list of all nodes below the current node in the hierarchy.
-func (tn *Node) Descendants() (descendants Nodes) {
-	for _, c := range tn.Children {
-		descendants = append(descendants, c)
-		descendants = append(descendants, c.Descendants()...)
 	}
 	return
 }
