@@ -26,8 +26,14 @@ func Test(t *testing.T) {
 			tree:     singleChildTwoParents(),
 			expected: []string{"parentA", "parentB", "child1"},
 		},
+		{
+			name:     "multiple levels",
+			tree:     multipleLevels(),
+			expected: []string{"A", "B", "C", "D", "E", "F", "G", "H", "I"},
+		},
 	}
 	for _, test := range tests {
+		test := test
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 			sorted := test.tree.Sorted()
@@ -64,5 +70,21 @@ func singleChildTwoParents() *Tree {
 	t := New()
 	t.AddParents(StringItem("child1"), StringItem("parentA"))
 	t.AddParents(StringItem("child1"), StringItem("parentB"))
+	return t
+}
+
+func multipleLevels() *Tree {
+	//    A  B
+	//   C  D
+	//  E  F
+	// G H  I
+	t := New()
+	t.AddParents(StringItem("G"), StringItem("E"))
+	t.AddParents(StringItem("H"), StringItem("E"), StringItem("F"))
+	t.AddParents(StringItem("I"), StringItem("F"))
+	t.AddParents(StringItem("E"), StringItem("C"))
+	t.AddParents(StringItem("F"), StringItem("D"))
+	t.AddParents(StringItem("C"), StringItem("A"))
+	t.AddParents(StringItem("D"), StringItem("B"))
 	return t
 }
