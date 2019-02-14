@@ -46,9 +46,12 @@ func (t *Tree) AddParents(from Item, to ...Item) {
 
 // Nodes returns all available nodes, in a random order.
 func (t *Tree) Nodes() (tn Nodes) {
+	tn = make(Nodes, len(t.nodes))
+	var i int
 	for name := range t.nodes {
 		n, _ := t.GetNode(name)
-		tn = append(tn, n)
+		tn[i] = n
+		i++
 	}
 	return
 }
